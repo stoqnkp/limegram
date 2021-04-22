@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Limegram</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<p id="publicFeed">Public feed: </p>
+<p id="privateFeed">Private feed: </p>
+
+<script>
+
+  window.onload = async () => {
+    const response = await fetch('http://localhost:8080/feed/public');
+    const myJson = await response.json(); //extract JSON from the http response
+    // do something with myJson
+    document.getElementById("publicFeed").innerHTML += myJson;
+  }
+
+  var ws_private_feed = new WebSocket('ws://localhost:8080/ws/privateFeed');
+
+  ws_private_feed.onopen = () => {
+    ws_private_feed.send(makeid(5));
+  }
+
+  ws_private_feed.onerror = (e) => {
+      console.log(error);
+  }
+
+  ws_private_feed.onmessage = (e) => {
+    document.getElementById("privateFeed").innerHTML += e.data;
+  }
+
+  var ws_public_feed = new WebSocket('ws://localhost:8080/ws/publicFeed');
+
+  ws_public_feed.onopen = () => {
+  }
+
+  ws_public_feed.onerror = (e) => {
+    console.log(error);
+  }
+
+  ws_public_feed.onmessage = (e) => {
+    document.getElementById("publicFeed").innerHTML += e.data;
+  }
+
+  function makeid(length) {
+    var result           = [];
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result.push(characters.charAt(Math.floor(Math.random() *
+              charactersLength)));
+    }
+    return result.join('');
+  }
+
+</script>
+
+</body>
+</html>
