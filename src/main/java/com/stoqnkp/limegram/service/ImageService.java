@@ -3,15 +3,17 @@ package com.stoqnkp.limegram.service;
 import com.stoqnkp.limegram.websockets.PrivateFeedHandler;
 import com.stoqnkp.limegram.websockets.PublicFeedHandler;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ImageService {
 
-    Map<String, List<String>> userIdToImageMap = new HashMap<>();
-    List<String> publicFeed = new ArrayList<>();
+    Map<String, List<byte[]>> userIdToImageMap = new HashMap<>();
+    List<byte[]> publicFeed = new ArrayList<>();
 
     private final PrivateFeedHandler privateFeedHandler;
     private final PublicFeedHandler publicFeedHandler;
@@ -21,27 +23,26 @@ public class ImageService {
         this.publicFeedHandler = publicFeedHandler;
     }
 
-    public List<String> getAllImages() {
+    public List<byte[]> getAllImages() {
         return publicFeed;
     }
 
-    public List<String> getUserImages(String userId) {
+    public List<byte[]> getUserImages(String userId) {
         return userIdToImageMap.get(userId);
     }
 
-    public void uploadImage(String userId, MultipartFile file){
+    public void uploadImage(String userId, byte[] file){
         if(!userIdToImageMap.containsKey(userId)) {
-            List<String> userImageNames = new ArrayList<>();
-            userImageNames.add(file.getOriginalFilename());
-            userIdToImageMap.put(userId, userImageNames);
+            List<byte[]> userImages = new ArrayList<>();
+            userImages.add(file);
+            userIdToImageMap.put(userId, userImages);
         } else {
-            userIdToImageMap.get(userId).add(file.getOriginalFilename());
+            userIdToImageMap.get(userId).add(file);
         }
-        publicFeed.add(file.getOriginalFilename());
+        publicFeed.add(file);
 
-
-        privateFeedHandler.sendMessageToUserSessions(userId, file.getOriginalFilename());
-        publicFeedHandler.sendMessageToAllSessions(file.getOriginalFilename());
+        privateFeedHandler.sendMessageToUserSessions(userId, file);
+        publicFeedHandler.sendMessageToAllSessions(file);
     }
 
 }

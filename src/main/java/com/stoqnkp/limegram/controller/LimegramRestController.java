@@ -4,6 +4,7 @@ import com.stoqnkp.limegram.service.ImageService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,17 +18,21 @@ public class LimegramRestController {
     }
 
     @GetMapping("/feed/public")
-    public List<String> getPublicFeed() {
+    public List<byte[]> getPublicFeed() {
         return imageService.getAllImages();
     }
 
     @GetMapping("/feed/{userId}")
-    public List<String> getUserFeed(@PathVariable String userId) {
+    public List<byte[]> getUserFeed(@PathVariable String userId) {
         return imageService.getUserImages(userId);
     }
 
     @PostMapping("/upload/{userId}")
     public void uploadImage(@PathVariable String userId, @RequestParam("file") MultipartFile file) {
-        imageService.uploadImage(userId, file);
+        try {
+            imageService.uploadImage(userId, file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -9,6 +9,8 @@
 </head>
 <body>
 
+<p id="id_placeholder">Generated id: </p>
+
 <p id="publicFeed">Public feed: </p>
 <p id="privateFeed">Private feed: </p>
 
@@ -17,14 +19,25 @@
   window.onload = async () => {
     const response = await fetch('http://localhost:8080/feed/public');
     const myJson = await response.json(); //extract JSON from the http response
-    // do something with myJson
-    document.getElementById("publicFeed").innerHTML += myJson;
+
+    myJson.forEach(function(item, index, array) {
+
+      var elem = document.createElement("img");
+      elem.setAttribute("src", "data:application/octet-stream;base64," + item);
+      elem.setAttribute("height", "100");
+      elem.setAttribute("width", "100");
+      elem.setAttribute("alt", "Flower");
+
+      document.getElementById("publicFeed").appendChild(elem);
+    })
   }
 
   var ws_private_feed = new WebSocket('ws://localhost:8080/ws/privateFeed');
 
   ws_private_feed.onopen = () => {
-    ws_private_feed.send(makeid(5));
+    var generated_id = makeid(5);
+    document.getElementById("id_placeholder").innerHTML += generated_id;
+    ws_private_feed.send(generated_id);
   }
 
   ws_private_feed.onerror = (e) => {
@@ -32,7 +45,21 @@
   }
 
   ws_private_feed.onmessage = (e) => {
-    document.getElementById("privateFeed").innerHTML += e.data;
+
+    var reader = new FileReader();
+    reader.readAsDataURL(e.data);
+    reader.onloadend = function() {
+      var base64data = reader.result;
+
+      var elem = document.createElement("img");
+      elem.setAttribute("src", base64data);
+      elem.setAttribute("height", "100");
+      elem.setAttribute("width", "100");
+      elem.setAttribute("alt", "Flower");
+
+      document.getElementById("privateFeed").appendChild(elem);
+
+    }
   }
 
   var ws_public_feed = new WebSocket('ws://localhost:8080/ws/publicFeed');
@@ -45,7 +72,20 @@
   }
 
   ws_public_feed.onmessage = (e) => {
-    document.getElementById("publicFeed").innerHTML += e.data;
+
+    var reader = new FileReader();
+    reader.readAsDataURL(e.data);
+    reader.onloadend = function() {
+      var base64data = reader.result;
+
+      var elem = document.createElement("img");
+      elem.setAttribute("src", base64data);
+      elem.setAttribute("height", "100");
+      elem.setAttribute("width", "100");
+      elem.setAttribute("alt", "Flower");
+      document.getElementById("publicFeed").appendChild(elem);
+
+    }
   }
 
   function makeid(length) {

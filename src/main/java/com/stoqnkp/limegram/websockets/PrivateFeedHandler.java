@@ -1,8 +1,10 @@
 package com.stoqnkp.limegram.websockets;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class PrivateFeedHandler extends TextWebSocketHandler {
+public class PrivateFeedHandler extends BinaryWebSocketHandler {
 
     private Map<String, WebSocketSession> sessions = new HashMap<>();
     private Map<String, List<String>> userToSessionMap = new HashMap<>();
@@ -24,7 +26,7 @@ public class PrivateFeedHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        System.out.println("Received new session with id: " + session.getId() + " message " + message.getPayload());
+        System.out.println("Received new session with id: " + session.getId() + " from user id " + message.getPayload());
 
         if(message.getPayload() == null || message.getPayload().isEmpty()) {
             return;
@@ -36,7 +38,7 @@ public class PrivateFeedHandler extends TextWebSocketHandler {
         }
     }
 
-    public void sendMessageToUserSessions(String userName, String message) {
+    public void sendMessageToUserSessions(String userName, byte[] message) {
         List<String> sessionsList = userToSessionMap.get(userName);
         if(sessionsList == null || sessionsList.isEmpty())
             return;
@@ -44,7 +46,7 @@ public class PrivateFeedHandler extends TextWebSocketHandler {
             WebSocketSession session = sessions.get(sessionId);
             if(session != null && session.isOpen())
                 try {
-                    session.sendMessage(new TextMessage(message));
+                    session.sendMessage(new BinaryMessage(message));
                 } catch (IOException e) {
                     e.printStackTrace();
                 };

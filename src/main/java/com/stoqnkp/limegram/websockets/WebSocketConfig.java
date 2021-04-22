@@ -1,7 +1,5 @@
 package com.stoqnkp.limegram.websockets;
 
-import com.stoqnkp.limegram.websockets.PrivateFeedHandler;
-import com.stoqnkp.limegram.websockets.PublicFeedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -10,7 +8,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 @Configuration
 @EnableWebSocket
-public class WebSocketConfig  implements WebSocketConfigurer {
+public class WebSocketConfig implements WebSocketConfigurer {
 
     @Autowired
     PrivateFeedHandler privateFeedHandler;
