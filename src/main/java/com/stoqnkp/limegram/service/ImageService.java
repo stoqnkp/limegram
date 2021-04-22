@@ -1,7 +1,11 @@
 package com.stoqnkp.limegram.service;
 
-import com.stoqnkp.limegram.websockets.PrivateFeedHandler;
-import com.stoqnkp.limegram.websockets.PublicFeedHandler;
+import com.stoqnkp.limegram.events.GetFeedEvent;
+import com.stoqnkp.limegram.events.RequestUploadEvent;
+import com.stoqnkp.limegram.events.UploadedImageEvent;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,39 +14,41 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ImageService {
+public class ImageService implements ApplicationListener<ApplicationEvent>{
 
     Map<String, List<byte[]>> userIdToImageMap = new HashMap<>();
     List<byte[]> publicFeed = new ArrayList<>();
 
-    private final PrivateFeedHandler privateFeedHandler;
-    private final PublicFeedHandler publicFeedHandler;
+    private ApplicationEventPublisher eventPublisher;
 
-    public ImageService(PrivateFeedHandler privateFeedHandler, PublicFeedHandler publicFeedHandler) {
-        this.privateFeedHandler = privateFeedHandler;
-        this.publicFeedHandler = publicFeedHandler;
+    public ImageService(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
 
-    public List<byte[]> getAllImages() {
-        return publicFeed;
-    }
+    @Override
+    public void onApplicationEvent(ApplicationEvent applicationEvent) {
+        if(applicationEvent instanceof RequestUploadEvent) {
+            RequestUploadEvent requestUploadEvent = (RequestUploadEvent) applicationEvent;
+            if(!userIdToImageMap.containsKey(requestUploadEvent.getUploaderId())) {
+                List<byte[]> userImages = new ArrayList<>();
+                userImages.add(requestUploadEvent.getImageBytes());
+                userIdToImageMap.put(requestUploadEvent.getUploaderId(), userImages);
+            } else {
+                userIdToImageMap.get(requestUploadEvent.getUploaderId()).add(requestUploadEvent.getImageBytes());
+            }
+            publicFeed.add(requestUploadEvent.getImageBytes());
 
-    public List<byte[]> getUserImages(String userId) {
-        return userIdToImageMap.get(userId);
-    }
-
-    public void uploadImage(String userId, byte[] file){
-        if(!userIdToImageMap.containsKey(userId)) {
-            List<byte[]> userImages = new ArrayList<>();
-            userImages.add(file);
-            userIdToImageMap.put(userId, userImages);
-        } else {
-            userIdToImageMap.get(userId).add(file);
+            // publish image uploaded event with user id. Public feed should always consume, private feed only if it has matching session
+            UploadedImageEvent uploadedImageEvent = new UploadedImageEvent(this, requestUploadEvent.getUploaderId(), requestUploadEvent.getImageBytes());
+            eventPublisher.publishEvent(uploadedImageEvent);
+        } else if (applicationEvent instanceof GetFeedEvent) {
+            GetFeedEvent getFeedEvent = (GetFeedEvent) applicationEvent;
+            if(getFeedEvent.getUserId() == null) {
+                getFeedEvent.getResult().setResult(publicFeed);
+            } else {
+                getFeedEvent.getResult().setResult(userIdToImageMap.get(getFeedEvent.getUserId()));
+            }
+            System.out.println("set result in deferred result object");
         }
-        publicFeed.add(file);
-
-        privateFeedHandler.sendMessageToUserSessions(userId, file);
-        publicFeedHandler.sendMessageToAllSessions(file);
     }
-
 }
