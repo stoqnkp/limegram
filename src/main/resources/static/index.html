@@ -20,9 +20,9 @@
     const response = await fetch('http://localhost:8080/feed/public');
     const myJson = await response.json(); //extract JSON from the http response
 
-    myJson.forEach(function(item, index, array) {
+    myJson.forEach(function(item) {
 
-      var elem = document.createElement("img");
+      const elem = document.createElement("img");
       elem.setAttribute("src", "data:application/octet-stream;base64," + item);
       elem.setAttribute("height", "100");
       elem.setAttribute("width", "100");
@@ -32,27 +32,26 @@
     })
   }
 
-  var ws_private_feed = new WebSocket('ws://localhost:8080/ws/privateFeed');
+  const ws_private_feed = new WebSocket('ws://localhost:8080/ws/privateFeed');
 
   ws_private_feed.onopen = () => {
-    var generated_id = makeid(5);
+    const generated_id = makeId(5);
     document.getElementById("id_placeholder").innerHTML += generated_id;
     ws_private_feed.send(generated_id);
   }
 
   ws_private_feed.onerror = (e) => {
-      console.log(error);
+      console.log(e);
   }
 
   ws_private_feed.onmessage = (e) => {
 
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsDataURL(e.data);
     reader.onloadend = function() {
-      var base64data = reader.result;
 
-      var elem = document.createElement("img");
-      elem.setAttribute("src", base64data);
+      const elem = document.createElement("img");
+      elem.setAttribute("src", reader.result);
       elem.setAttribute("height", "100");
       elem.setAttribute("width", "100");
       elem.setAttribute("alt", "Flower");
@@ -62,24 +61,23 @@
     }
   }
 
-  var ws_public_feed = new WebSocket('ws://localhost:8080/ws/publicFeed');
+  const ws_public_feed = new WebSocket('ws://localhost:8080/ws/publicFeed');
 
   ws_public_feed.onopen = () => {
   }
 
   ws_public_feed.onerror = (e) => {
-    console.log(error);
+    console.log(e);
   }
 
   ws_public_feed.onmessage = (e) => {
 
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsDataURL(e.data);
     reader.onloadend = function() {
-      var base64data = reader.result;
 
-      var elem = document.createElement("img");
-      elem.setAttribute("src", base64data);
+      const elem = document.createElement("img");
+      elem.setAttribute("src", reader.result);
       elem.setAttribute("height", "100");
       elem.setAttribute("width", "100");
       elem.setAttribute("alt", "Flower");
@@ -88,10 +86,10 @@
     }
   }
 
-  function makeid(length) {
-    var result           = [];
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
+  function makeId(length) {
+    const result           = [];
+    const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
     for ( var i = 0; i < length; i++ ) {
       result.push(characters.charAt(Math.floor(Math.random() *
               charactersLength)));
