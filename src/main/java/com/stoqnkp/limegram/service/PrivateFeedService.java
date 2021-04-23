@@ -1,8 +1,8 @@
-package com.stoqnkp.limegram.websockets;
+package com.stoqnkp.limegram.service;
 
 import com.stoqnkp.limegram.events.UploadedImageEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
-public class PrivateFeedHandler extends BinaryWebSocketHandler implements ApplicationListener<UploadedImageEvent> {
+@Service
+public class PrivateFeedService extends BinaryWebSocketHandler implements ApplicationListener<UploadedImageEvent> {
 
     private final Map<String, WebSocketSession> sessions = new HashMap<>();
     private final Map<String, List<String>> userToSessionMap = new HashMap<>();

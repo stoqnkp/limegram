@@ -5,19 +5,13 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.List;
 
-public class GetFeedEvent extends ApplicationEvent {
+public class GetPublicFeedEvent extends ApplicationEvent {
 
     private final DeferredResult<List<byte[]>> result;
-    private final String userId;
 
-    public GetFeedEvent(Object source, DeferredResult<List<byte[]>> result, String userId) {
+    public GetPublicFeedEvent(Object source, DeferredResult<List<byte[]>> result) {
         super(source);
         this.result = result;
-        this.userId = userId;
-    }
-
-    public String getUserId() {
-        return userId;
     }
 
     public DeferredResult<List<byte[]>> getResult() {

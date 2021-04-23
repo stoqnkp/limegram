@@ -1,6 +1,7 @@
 package com.stoqnkp.limegram.controller;
 
-import com.stoqnkp.limegram.events.GetFeedEvent;
+import com.stoqnkp.limegram.events.GetPrivateFeedEvent;
+import com.stoqnkp.limegram.events.GetPublicFeedEvent;
 import com.stoqnkp.limegram.events.RequestUploadEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +23,14 @@ public class LimegramRestController {
     @GetMapping("/feed/public")
     public DeferredResult<List<byte[]>> getPublicFeed() {
         DeferredResult<List<byte[]>> deferredResult = new DeferredResult<>();
-        eventPublisher.publishEvent(new GetFeedEvent(this, deferredResult, null));
+        eventPublisher.publishEvent(new GetPublicFeedEvent(this, deferredResult));
         return deferredResult;
     }
 
     @GetMapping("/feed/{userId}")
     public DeferredResult<List<byte[]>> getUserFeed(@PathVariable String userId) {
         DeferredResult<List<byte[]>> deferredResult = new DeferredResult<>();
-        eventPublisher.publishEvent(new GetFeedEvent(this, deferredResult, userId));
+        eventPublisher.publishEvent(new GetPrivateFeedEvent(this, deferredResult, userId));
         return deferredResult;
     }
 

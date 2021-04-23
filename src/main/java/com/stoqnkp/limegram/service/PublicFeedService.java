@@ -1,8 +1,8 @@
-package com.stoqnkp.limegram.websockets;
+package com.stoqnkp.limegram.service;
 
 import com.stoqnkp.limegram.events.UploadedImageEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class PublicFeedHandler extends BinaryWebSocketHandler implements ApplicationListener<UploadedImageEvent> {
+@Service
+public class PublicFeedService extends BinaryWebSocketHandler implements ApplicationListener<UploadedImageEvent> {
 
     private List<WebSocketSession> sessionsList = new ArrayList<>();
 

@@ -1,5 +1,7 @@
-package com.stoqnkp.limegram.websockets;
+package com.stoqnkp.limegram;
 
+import com.stoqnkp.limegram.service.PrivateFeedService;
+import com.stoqnkp.limegram.service.PublicFeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -11,14 +13,14 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
     @Autowired
-    PrivateFeedHandler privateFeedHandler;
+    PrivateFeedService privateFeedService;
 
     @Autowired
-    PublicFeedHandler publicFeedHandler;
+    PublicFeedService publicFeedService;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(privateFeedHandler, "/ws/privateFeed").setAllowedOrigins("*");
-        registry.addHandler(publicFeedHandler, "/ws/publicFeed").setAllowedOrigins("*");
+        registry.addHandler(privateFeedService, "/ws/privateFeed").setAllowedOrigins("*");
+        registry.addHandler(publicFeedService, "/ws/publicFeed").setAllowedOrigins("*");
     }
 }
