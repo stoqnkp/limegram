@@ -21,3 +21,7 @@ To upload an image either:
 2) Use something like Postman or any tool that can be used with REST APIs.
 POST localhost:8080/upload/yd71F
 in body select form-data and add a property with key 'file' and value - the image file you want to upload 
+
+If you upload using the generated user id the image should appear in both personal and public feeds.
+If you upload using a random id, the image should appear only in the public feed.
+If you refresh the page a new id will be generated and the public feed will load with all previously uploaded images (before server restart).
