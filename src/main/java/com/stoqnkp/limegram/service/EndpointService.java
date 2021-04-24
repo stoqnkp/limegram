@@ -1,4 +1,4 @@
-package com.stoqnkp.limegram.controller;
+package com.stoqnkp.limegram.service;
 
 import com.stoqnkp.limegram.events.GetPrivateFeedEvent;
 import com.stoqnkp.limegram.events.GetPublicFeedEvent;
@@ -12,11 +12,11 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-public class LimegramRestController {
+public class EndpointService {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    public LimegramRestController(ApplicationEventPublisher eventPublisher) {
+    public EndpointService(ApplicationEventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
     }
 
