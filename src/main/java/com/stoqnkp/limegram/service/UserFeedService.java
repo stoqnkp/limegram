@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class PrivateFeedService extends BinaryWebSocketHandler implements ApplicationListener<UploadedImageEvent> {
+public class UserFeedService extends BinaryWebSocketHandler implements ApplicationListener<UploadedImageEvent> {
 
     private final Map<String, WebSocketSession> sessions = new HashMap<>();
     private final Map<String, List<String>> userToSessionMap = new HashMap<>();
